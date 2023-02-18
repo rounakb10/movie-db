@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* https://colorhunt.co/palette/1a120b3c2a21d5cea3e5e5cb */
+/* https://coolors.co/palette/01161e-124559-598392-aec3b0-eff6e0 */
+@layer base {
+	* {
+		--transition: 0.3s ease-in-out all;
+	}
+
+	body {
+		transition: var(--transition);
+		background-color: theme("colors.bg");
+		color: theme("colors.text");
+		font-family: "Inter", sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+@layer utilities {
+	.default-transition {
+		transition: var(--transition);
+	}
+	.slow-transition {
+		transition: all 2s;
+	}
+}
