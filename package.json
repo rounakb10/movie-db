@@ -8,7 +8,8 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"server": "nodemon ./backend/server --ignore frontend",
 		"frontend": "npm start --prefix frontend",
-		"start": "concurrently --kill-others-on-fail \"npm run server\" \" npm run frontend\""
+		"start": "concurrently --kill-others-on-fail \"npm run server\" \" npm run frontend\"",
+		"install-frontend": "cd frontend && npm install"
 	},
 	"keywords": [],
 	"author": "",
