@@ -2,17 +2,32 @@ import InputGroup from "../components/InputGroup"
 import Cards from "../components/Cards"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import Navbar from "../components/Navbar"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import appContext from "../context/appContext"
 import Footer from "../components/Footer"
 
 function Home() {
-	const { data, loading, errorMessage } = useContext(appContext)
-
-	const setUpdatedId = () => {}
+	const {
+		data,
+		loading,
+		errorMessage,
+		getNothing,
+		getTopMovies,
+		getTopSeries,
+		choice,
+	} = useContext(appContext)
+	useEffect(() => {
+		if (choice === "theaters") {
+			getNothing()
+		} else if (choice === "movies") {
+			getTopMovies()
+		} else if (choice === "series") {
+			getTopSeries()
+		}
+	}, [choice])
 
 	return (
-		<div className='flex flex-col h-screen items-center justify-between '>
+		<div className='flex flex-col h-screen items-center justify-between select-none'>
 			<Navbar />
 
 			<main className='self-stretch'>
@@ -30,7 +45,7 @@ function Home() {
 				{data ? (
 					data.errorMessage === "" || errorMessage === "" ? (
 						<div className='overflow-hidden p-2'>
-							<Cards data={data} setUpdatedId={setUpdatedId} />
+							<Cards data={data} />
 						</div>
 					) : (
 						<div className='flex flex-col h-[85vh] items-center justify-center'>

@@ -1,11 +1,10 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import Cards from "../components/Cards"
-import axios from "axios"
+import appContext from "../context/appContext"
 function MovieDetails() {
-	const [movieData, setMovieData] = useState(null)
-	const [loading, setLoading] = useState(null)
+	const { loading, getMovieData, movieData } = useContext(appContext)
 
 	const params = useParams()
 	const location = useLocation()
@@ -21,16 +20,9 @@ function MovieDetails() {
 		return formattedDate
 	}
 
-	const getMovieData = async () => {
-		setLoading(true)
-		const { data } = await axios(`/api/imdb/details?movieId=${params.id}`)
-		setMovieData(data)
-		setLoading(false)
-	}
-
 	useEffect(() => {
-		getMovieData()
-		window.scrollTo(0, 0)
+		getMovieData({ id: params.id })
+		window.scrollTo({ top: 0, behavior: "smooth" })
 		// eslint-disable-next-line
 	}, [location])
 

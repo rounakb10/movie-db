@@ -2,29 +2,35 @@ import { useContext } from "react"
 import appContext from "../context/appContext"
 import { Theme } from "react-switch-theme"
 function Navbar() {
-	const { getTopSeries, getTopMovies, getNothing } = useContext(appContext)
+	const { setChoice } = useContext(appContext)
 	// eslint-disable-next-line
 	const [theme, toggleTheme] = useContext(Theme)
 
 	return (
-		<nav className=' flex self-stretch gap-6 justify-between items-center mb-4 md:mx-5 px-6 bg-surface md:rounded-b-lg'>
+		<nav className=' flex self-stretch gap-6 justify-between items-center mb-4 px-6 bg-surface md:rounded-b-lg'>
 			<button
 				className='nav-item text-2xl py-4 default-transition hover:text-grey'
-				onClick={getNothing}
+				onClick={() => {
+					setChoice("theaters")
+				}}
 			>
 				MovieDB
 			</button>
 			<div className='flex md:gap-6 gap-3'>
 				<button
 					className='default-transition hover:text-grey'
-					onClick={getTopMovies}
+					onClick={() => {
+						setChoice("movies")
+					}}
 				>
 					Top 60 Movies
 				</button>
 
 				<button
 					className='default-transition hover:text-grey'
-					onClick={getTopSeries}
+					onClick={() => {
+						setChoice("series")
+					}}
 				>
 					Top 60 TV
 				</button>
