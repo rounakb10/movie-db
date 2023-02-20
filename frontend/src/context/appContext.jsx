@@ -7,6 +7,8 @@ export const DataProvider = ({ children }) => {
 	const [loading, setLoading] = useState(null)
 	const [errorMessage, setErrorMessage] = useState("")
 	const [searchTerm, setSearchTerm] = useState("")
+	const [movieData, setMovieData] = useState(null)
+	const [choice, setChoice] = useState("theaters")
 
 	const getTopMovies = async () => {
 		setLoading(true)
@@ -19,6 +21,14 @@ export const DataProvider = ({ children }) => {
 	const getTopSeries = async () => {
 		setLoading(true)
 		const { data } = await axios("/api/imdb/top_series")
+		setErrorMessage(data.errorMessage)
+		setData(data.items)
+		setLoading(false)
+	}
+
+	const getInTheaters = async () => {
+		setLoading(true)
+		const { data } = await axios("/api/imdb/in_theaters")
 		setErrorMessage(data.errorMessage)
 		setData(data.items)
 		setLoading(false)
@@ -41,6 +51,19 @@ export const DataProvider = ({ children }) => {
 		setLoading(false)
 	}
 
+	const getMovieData = async ({ id, type }) => {
+		setLoading(true)
+		const { data } = await axios(
+			`/api/imdb/details?movieId=${id}&type=${type}`
+		)
+		setMovieData(data)
+		setLoading(false)
+	}
+
+	const clearMovieData = async () => {
+		setMovieData(null)
+	}
+
 	const switchTheme = () => {}
 
 	return (
@@ -56,6 +79,12 @@ export const DataProvider = ({ children }) => {
 				search,
 				switchTheme,
 				setSearchTerm,
+				getMovieData,
+				getInTheaters,
+				movieData,
+				choice,
+				setChoice,
+				clearMovieData,
 			}}
 		>
 			{children}

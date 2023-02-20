@@ -1,14 +1,23 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom"
-import { useEffect, useState } from "react"
+import {
+	useNavigate,
+	useParams,
+	useLocation,
+	useSearchParams,
+	Link,
+} from "react-router-dom"
+import { useContext, useEffect, useState } from "react"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import Cards from "../components/Cards"
-import axios from "axios"
+import appContext from "../context/appContext"
+import { BiLinkExternal } from "react-icons/bi"
 function MovieDetails() {
-	const [movieData, setMovieData] = useState(null)
-	const [loading, setLoading] = useState(null)
+	const { loading, getMovieData, movieData, clearMovieData } =
+		useContext(appContext)
 
 	const params = useParams()
 	const location = useLocation()
+
+	const [readMore, setReadMore] = useState(false)
 
 	const getDate = (val) => {
 		var date = new Date(val)
@@ -21,22 +30,16 @@ function MovieDetails() {
 		return formattedDate
 	}
 
-	const getMovieData = async () => {
-		setLoading(true)
-		const { data } = await axios(`/api/imdb/details?movieId=${params.id}`)
-		setMovieData(data)
-		setLoading(false)
-	}
-
 	useEffect(() => {
-		getMovieData()
-		window.scrollTo(0, 0)
+		getMovieData({ id: params.id, type: location.search.split("=").at(1) })
+		// window.scrollTo({ top: 0, behavior: "smooth" })
 		// eslint-disable-next-line
 	}, [location])
 
 	let navigate = useNavigate()
 	const handleClose = () => {
 		navigate("/", { replace: true })
+		clearMovieData()
 	}
 
 	const handleClick = () => {
@@ -73,101 +76,168 @@ function MovieDetails() {
 				</div>
 			)}
 			{movieData ? (
-				movieData.errorMessage === "" ? (
-					<div className='mb-8'>
-						<div className='grid mt-4 mb-32 md:mx-6 mx-4 md:grid-cols-[40%_60%] grid-cols-1 md:gap-0 gap-6 justify-items-center content-center'>
-							<div className='mb-2'>
-								<img
-									className='rounded-xl md:w-3/4 w-[90%] mx-auto'
-									src={movieData.image}
-									alt={movieData.title}
-								/>
-							</div>
-							<div className='movie-details'>
-								<div className='mb-10 text-center'>
-									<h1 className='md:text-3xl text-2xl mb-4'>
-										{movieData.fullTitle}
-									</h1>
-									<div className='md:text-xl text-lg'>
-										{movieData.imDbRating && (
-											<p className='mb-2'>
-												Rating: {movieData.imDbRating}
-												/10
-											</p>
-										)}
-										<p className='mb-2'>
-											{movieData.releaseDate &&
-												getDate(movieData.releaseDate)}
-											{movieData.runtimeMins && " | "}
-											{movieData.runtimeMins}{" "}
-											{movieData.runtimeMins && "mins"}
-										</p>
-										{movieData.genres && (
-											<p className='mb-6'>
-												{movieData.genres}
-											</p>
-										)}
-									</div>
-								</div>
-								{movieData.plot && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Overview
+				<div className='mb-8'>
+					<div className='grid mt-4 mb-32 md:mx-6 mx-4 md:grid-cols-[40%_60%] grid-cols-1 md:gap-0 gap-6 justify-items-center content-center'>
+						<div className='mb-2'>
+							<img
+								className='rounded-xl md:w-3/4 w-[90%] mx-auto shadow-lg'
+								src={movieData.image}
+								alt={movieData.title}
+							/>
+						</div>
+						<div className='flex flex-col gap-10'>
+							<div className='flex flex-col gap-6 items-center md:items-start '>
+								<div className='text-center md:text-start flex flex-col gap-3'>
+									<div className='flex items-center gap-2'>
+										<h1 className='md:text-4xl text-3xl text-white tracking-wide '>
+											{movieData.title}
+											<span className='inline-block ml-1'>
+												{movieData.originalTitle &&
+													`(${movieData.originalTitle})`}
+											</span>
 										</h1>
-										<p className='md:text-lg text-md mb-8'>
-											{movieData.plot}
-										</p>
-									</div>
-								)}
-								{movieData.awards && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Awards
-										</h1>
-										<p className='md:text-lg text-md mb-8'>
-											{movieData.awards}
-										</p>
-									</div>
-								)}
-								{movieData.stars && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Top Cast
-										</h1>
-										<p className='md:text-lg text-md mb-6'>
-											{movieData.stars}
-										</p>
-									</div>
-								)}
-								{movieData.trailer.link && (
-									<div className='text-center md:text-left'>
-										<button
-											type='button'
-											className='trailer-btn mt-8 rounded-xl px-6 py-3 text-xl default-transition 
-											border border-text 
-											bg-transparent hover:bg-text text-text hover:text-bg'
-											onClick={handleClick}
+										<Link
+											to={movieData.website}
+											target='_blank'
 										>
-											Watch Trailer
-										</button>
+											<BiLinkExternal size={26} />
+										</Link>
 									</div>
-								)}
+									<h2 className='md:text-xl text-lg'>
+										{movieData.tagline}
+									</h2>
+								</div>
+								<div className='grid grid-cols-[auto,auto] gap-y-1 gap-x-3 text-lg md:text-xl '>
+									<span className='text-slate-300'>
+										TMDB Rating
+									</span>
+									<span>
+										{movieData.rating}
+										/10
+									</span>
+									<span className='text-slate-300'>
+										{!movieData.lastAirDate
+											? "Release Date"
+											: "Airing Date"}
+									</span>
+									<span>
+										{getDate(movieData.releaseDate)}
+										{movieData.status !== "Ended"
+											? " - Present"
+											: movieData.lastAirDate &&
+											  ` - ${getDate(
+													movieData.lastAirDate
+											  )}`}
+									</span>
+									<span className='text-slate-300'>
+										Languages
+									</span>
+									<span>{movieData.languages}</span>
+									<span className='text-slate-300'>
+										Genres
+									</span>
+									<span>{movieData.genres}</span>
+								</div>
+								{/* <div className='flex flex-row mb-6 md:gap-2'>
+									
+									<div className='md:text-xl text-lg flex flex-col gap-3 text-slate-300'>
+											
+										<span>TMDB Rating: </span>
+										<span>Release Date:</span>
+										<span>Languages: </span>
+										<span>Genres: </span>
+									</div>
+									<div className='md:text-xl text-lg flex flex-col gap-3 items-end md:items-start'>
+										<span>
+											{movieData.rating}
+											/10
+										</span>
+										<span>
+											{getDate(movieData.releaseDate)}
+										</span>
+										<span>{movieData.languages}</span>
+										<span>{movieData.genres}</span>
+									</div>
+								</div> */}
+							</div>
+
+							{movieData.overview && (
+								<div>
+									<h1 className='md:text-3xl text-2xl mb-3 text-slate-200'>
+										Overview
+									</h1>
+									<p className='sm:text-lg'>
+										{readMore
+											? movieData.overview
+											: movieData.overview.substring(
+													0,
+													500
+											  )}
+										{movieData.overview.length > 500 &&
+											(!readMore ? ".." : " ")}
+										<a
+											className={`cursor-pointer text-blue-300 ${
+												movieData.overview.length <= 500
+													? "hidden"
+													: "inline-block"
+											}`}
+											onClick={() => {
+												setReadMore(!readMore)
+											}}
+										>
+											{readMore
+												? "read less"
+												: "read more"}
+										</a>
+									</p>
+								</div>
+							)}
+							{movieData.awards && (
+								<div>
+									<h1 className='md:text-2xl text-xl mb-3'>
+										Awards
+									</h1>
+									<p className='md:text-lg text-md mb-8'>
+										{movieData.awards}
+									</p>
+								</div>
+							)}
+							{movieData.stars && (
+								<div>
+									<h1 className='md:text-2xl text-xl mb-3'>
+										Top Cast
+									</h1>
+									<p className='md:text-lg text-md mb-6'>
+										{movieData.stars}
+									</p>
+								</div>
+							)}
+							<div>
+								<h1 className='md:text-3xl text-2xl mb-3 text-slate-200'>
+									Trailers
+								</h1>
+								<div className='flex gap-5 flex-wrap'>
+									{movieData.trailers.map((trailer) => (
+										<Link
+											key={trailer.id}
+											to={trailer.link}
+											target='_blank'
+											className='text-lg border-surface border-2 px-4 py-2 rounded-xl hover:bg-surface default-transition'
+										>
+											{trailer.name}
+										</Link>
+									))}
+								</div>
 							</div>
 						</div>
-						<div className='text-center'>
-							<h3 className='md:text-3xl text-2xl mb-10 md:mt-2 mt-14'>
-								You might also like
-							</h3>
-						</div>
-						<Cards data={movieData.similars} />
 					</div>
-				) : (
-					<div className='flex flex-col h-[90vh] items-center justify-center'>
-						<p className='md:text-2xl sm:text-xl'>
-							API limit exceeded, try again later
-						</p>
+					<div className='text-center'>
+						<h3 className='md:text-3xl text-2xl mb-10 md:mt-2 mt-14'>
+							You might also like
+						</h3>
 					</div>
-				)
+					<Cards data={movieData.similars} />
+				</div>
 			) : (
 				<div></div>
 			)}
