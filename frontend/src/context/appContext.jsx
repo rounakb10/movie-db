@@ -9,7 +9,8 @@ export const DataProvider = ({ children }) => {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [movieData, setMovieData] = useState(null)
 	const [choice, setChoice] = useState("theaters")
-
+	const [popupPerson, setPopupPerson] = useState(null)
+	const [showPopup, setShowPopup] = useState(false)
 	const getTopMovies = async () => {
 		setLoading(true)
 		const { data } = await axios("/api/imdb/top_movies")
@@ -85,6 +86,10 @@ export const DataProvider = ({ children }) => {
 				choice,
 				setChoice,
 				clearMovieData,
+				popupPerson,
+				setPopupPerson,
+				showPopup,
+				setShowPopup,
 			}}
 		>
 			{children}

@@ -35,6 +35,8 @@
 		--text: #172c66;
 		--grey: #dbbdae;
 		--lightgrey: #f7e0d4;
+		--rt-color-white: #fff;
+		--rt-opacity: 1;
 	}
 
 	[data-theme="dark"] {
@@ -44,6 +46,8 @@
 		--text: #94a1b2;
 		--grey: #676971;
 		--lightgrey: #72757e;
+		--rt-color-dark: #000;
+		--rt-opacity: 1;
 	}
 
 	* {

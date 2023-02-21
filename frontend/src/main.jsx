@@ -5,6 +5,7 @@ import App from "./App"
 // import { ThemeProvider } from "react-switch-theme"
 import { ThemeProvider } from "react-hook-theme"
 import "react-hook-theme/dist/styles/style.css"
+import "react-tooltip/dist/react-tooltip.css"
 // const colors = {
 // 	dark: {
 // 		bg: "#16161a",
