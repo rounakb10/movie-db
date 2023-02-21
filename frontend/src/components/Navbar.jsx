@@ -1,10 +1,11 @@
 import { useContext } from "react"
 import appContext from "../context/appContext"
-import { Theme } from "react-switch-theme"
+// import { Theme } from "react-switch-theme"
+import { Toggle } from "react-hook-theme"
 function Navbar() {
 	const { setChoice } = useContext(appContext)
 	// eslint-disable-next-line
-	const [theme, toggleTheme] = useContext(Theme)
+	// const [theme, toggleTheme] = useContext(Theme)
 
 	return (
 		<nav className=' flex self-stretch gap-6 justify-between items-center mb-4 px-6 bg-surface md:rounded-b-lg'>
@@ -34,7 +35,8 @@ function Navbar() {
 				>
 					Top TV
 				</button>
-				<button className='default-transition' onClick={toggleTheme}>
+				<Toggle />
+				{/* <button className='default-transition' onClick={toggleTheme}>
 					{theme === "light" ? (
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
@@ -65,7 +67,7 @@ function Navbar() {
 							/>
 						</svg>
 					)}
-				</button>
+				</button> */}
 			</div>
 		</nav>
 	)
