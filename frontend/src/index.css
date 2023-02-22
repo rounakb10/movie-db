@@ -6,8 +6,52 @@
 /* https://colorhunt.co/palette/1a120b3c2a21d5cea3e5e5cb */
 /* https://coolors.co/palette/01161e-124559-598392-aec3b0-eff6e0 */
 @layer base {
-	* {
+	/* dark: {
+		bg: "#16161a",
+		surface: "#242629",
+		card: "#242629",
+		text: "#94a1b2",
+		grey: "#676971",
+		lightgrey: "#72757e",
+	},
+	light: {
+		bg: "#fef6e4",
+		surface: "#f3d2c1",
+		card: "#f3d2c1",
+		text: "#172c66",
+		grey: "#dbbdae",
+		lightgrey: "#f7e0d4",
+	}, */
+
+	:root {
 		--transition: 0.3s ease-in-out all;
+		--quick-transition: 0.2s ease-in-out all;
+	}
+
+	[data-theme="light"] {
+		--bg: #fef6e4;
+		--surface: #f3d2c1;
+		--card: #f3d2c1;
+		--text: #172c66;
+		--grey: #dbbdae;
+		--lightgrey: #f7e0d4;
+		--rt-color-white: #fff;
+		--rt-opacity: 1;
+	}
+
+	[data-theme="dark"] {
+		--bg: #16161a;
+		--surface: #242629;
+		--card: #242629;
+		--text: #94a1b2;
+		--grey: #676971;
+		--lightgrey: #72757e;
+		--rt-color-dark: #000;
+		--rt-opacity: 1;
+	}
+
+	* {
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	body {

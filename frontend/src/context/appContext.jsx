@@ -7,22 +7,27 @@ export const DataProvider = ({ children }) => {
 	const [loading, setLoading] = useState(null)
 	const [errorMessage, setErrorMessage] = useState("")
 	const [searchTerm, setSearchTerm] = useState("")
+	const [type, setType] = useState("all")
 	const [movieData, setMovieData] = useState(null)
 	const [choice, setChoice] = useState("theaters")
-
 	const getTopMovies = async () => {
 		setLoading(true)
 		const { data } = await axios("/api/imdb/top_movies")
-		setErrorMessage(data.errorMessage)
-		setData(data.items)
+		if (data) {
+			setErrorMessage(data.errorMessage)
+			setData(data.items)
+		}
 		setLoading(false)
 	}
 
 	const getTopSeries = async () => {
 		setLoading(true)
 		const { data } = await axios("/api/imdb/top_series")
-		setErrorMessage(data.errorMessage)
-		setData(data.items)
+
+		if (data) {
+			setData(data.items)
+			setErrorMessage(data.errorMessage)
+		}
 		setLoading(false)
 	}
 
@@ -41,24 +46,39 @@ export const DataProvider = ({ children }) => {
 	}
 
 	const search = async () => {
+		if (searchTerm.trim().length < 2) {
+			return
+		}
 		setLoading(true)
-		if (searchTerm !== "") {
-			var searchText = searchTerm.trim().toLocaleLowerCase()
-			const { data } = await axios.get(`/api/imdb?search=${searchText}`)
-			if (data.results) setData(data.results)
+
+		var searchText = searchTerm.trim().toLocaleLowerCase()
+		const { data } = await axios.get(
+			`/api/imdb?search=${searchText}&type=${type}`
+		)
+		console.log(data)
+		if (data && data.search === searchText) {
+			setErrorMessage(data.errorMessage)
+			setData(data.items)
+		}
+
+		setLoading(false)
+	}
+
+	const getMovieData = async ({ id, type }) => {
+		setLoading(true)
+		const { data } = await axios(
+			`/api/imdb/details?movieId=${id}&type=${type}`
+		)
+		if (data) {
+			setMovieData(data)
 			setErrorMessage(data.errorMessage)
 		}
 		setLoading(false)
 	}
 
-	const getMovieData = async ({ id }) => {
-		setLoading(true)
-		const { data } = await axios(`/api/imdb/details?movieId=${id}`)
-		setMovieData(data)
-		setLoading(false)
+	const clearMovieData = async () => {
+		setMovieData(null)
 	}
-
-	const switchTheme = () => {}
 
 	return (
 		<appContext.Provider
@@ -71,13 +91,15 @@ export const DataProvider = ({ children }) => {
 				getTopSeries,
 				getNothing,
 				search,
-				switchTheme,
 				setSearchTerm,
 				getMovieData,
 				getInTheaters,
 				movieData,
 				choice,
 				setChoice,
+				clearMovieData,
+				type,
+				setType,
 			}}
 		>
 			{children}

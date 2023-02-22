@@ -1,24 +1,30 @@
-import { useContext, useEffect, useState } from "react"
-import appContext from "../context/appContext"
+import { useEffect, useState } from "react"
 import MovieCard from "./MovieCard"
 function Cards({ data }) {
 	const [currPage, setCurrPage] = useState(1)
-	const { choice } = useContext(appContext)
 	useEffect(() => {
 		setCurrPage(1)
-	}, [choice])
+	}, [data])
+	var set = new Set()
+
 	return (
 		<>
-			<div className='grid lg:grid-cols-6 md:grid-cols-5 sm:grid-cols-3 grid-cols-2 lg:gap-8 gap-6 my-4 mx-3'>
+			<div className='grid xl grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 3xl:grid-cols-8 3xl:gap-10 lg:gap-8 gap-6 my-4 mx-3'>
 				{data &&
-					data.map(
-						(item, index) =>
-							index < 30 * currPage &&
-							30 * (currPage - 1) <= index && (
-								<MovieCard dataItem={item} key={item.id} />
+					data.map((item, index) => {
+						if (!set.has(item.id)) {
+							set.add(item.id)
+
+							return (
+								index < 30 * currPage &&
+								30 * (currPage - 1) <= index && (
+									<MovieCard dataItem={item} key={item.id} />
+								)
 							)
-					)}
+						}
+					})}
 			</div>
+			{/* Pagination */}
 			{data.length > 30 && (
 				<div className='flex justify-center gap-2'>
 					<button

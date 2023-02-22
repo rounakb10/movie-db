@@ -1,43 +1,33 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom"
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import Cards from "../components/Cards"
 import appContext from "../context/appContext"
+import { BiLinkExternal } from "react-icons/bi"
+import DetailedContent from "../components/DetailedContent"
+import { Toggle } from "react-hook-theme"
+import Table from "../components/Table"
 function MovieDetails() {
-	const { loading, getMovieData, movieData } = useContext(appContext)
+	const { loading, getMovieData, movieData, clearMovieData } =
+		useContext(appContext)
 
 	const params = useParams()
 	const location = useLocation()
 
-	const getDate = (val) => {
-		var date = new Date(val)
-		var options = {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-		}
-		var formattedDate = date.toLocaleDateString("en-IN", options)
-		return formattedDate
-	}
-
 	useEffect(() => {
-		getMovieData({ id: params.id })
-		window.scrollTo({ top: 0, behavior: "smooth" })
+		getMovieData({ id: params.id, type: location.search.split("=").at(1) })
+		// window.scrollTo({ top: 0, behavior: "smooth" })
 		// eslint-disable-next-line
 	}, [location])
 
 	let navigate = useNavigate()
 	const handleClose = () => {
 		navigate("/", { replace: true })
-	}
-
-	const handleClick = () => {
-		let url = movieData.trailer.link
-		window.open(url)
+		clearMovieData()
 	}
 
 	return (
-		<div className='p-2 overflow-hidden'>
+		<div className='p-2'>
 			<button type='button' onClick={handleClose} className='mt-2 ml-2'>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
@@ -54,7 +44,9 @@ function MovieDetails() {
 					/>
 				</svg>
 			</button>
-
+			<div className='absolute top-5 right-5'>
+				<Toggle />
+			</div>
 			{loading && (
 				<div className='text-center mb-12'>
 					<PropagateLoader
@@ -65,101 +57,57 @@ function MovieDetails() {
 				</div>
 			)}
 			{movieData ? (
-				movieData.errorMessage === "" ? (
-					<div className='mb-8'>
-						<div className='grid mt-4 mb-32 md:mx-6 mx-4 md:grid-cols-[40%_60%] grid-cols-1 md:gap-0 gap-6 justify-items-center content-center'>
-							<div className='mb-2'>
-								<img
-									className='rounded-xl md:w-3/4 w-[90%] mx-auto'
-									src={movieData.image}
-									alt={movieData.title}
-								/>
-							</div>
-							<div className='movie-details'>
-								<div className='mb-10 text-center'>
-									<h1 className='md:text-3xl text-2xl mb-4'>
-										{movieData.fullTitle}
-									</h1>
-									<div className='md:text-xl text-lg'>
-										{movieData.imDbRating && (
-											<p className='mb-2'>
-												Rating: {movieData.imDbRating}
-												/10
-											</p>
-										)}
-										<p className='mb-2'>
-											{movieData.releaseDate &&
-												getDate(movieData.releaseDate)}
-											{movieData.runtimeMins && " | "}
-											{movieData.runtimeMins}{" "}
-											{movieData.runtimeMins && "mins"}
-										</p>
-										{movieData.genres && (
-											<p className='mb-6'>
-												{movieData.genres}
-											</p>
+				<>
+					<div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap lg:gap-0 gap-6 justify-items-center content-center'>
+						<div className='mb-2 basis-1/3'>
+							<img
+								className='rounded-xl sm:w-3/4 w-[70%] mx-auto shadow-lg'
+								src={movieData.image}
+								alt={movieData.title}
+							/>
+						</div>
+						<div className='flex flex-col gap-10 basis-auto lg:basis-2/3'>
+							<div className='flex flex-col gap-6 items-center sm:items-start sm:mx-3 lg:mx-0'>
+								<div className='text-center md:text-start flex flex-col gap-3'>
+									<div className='flex items-center justify-center sm:justify-start gap-2'>
+										<h1 className='lg:text-4xl text-3xl font-medium text-slate-900 dark:text-white tracking-tight'>
+											{movieData.title}
+											<span className='inline-block ml-1'>
+												{movieData.originalTitle &&
+													`(${movieData.originalTitle})`}
+											</span>
+										</h1>
+										{movieData.website && (
+											<Link
+												to={movieData.website}
+												target='_blank'
+											>
+												<BiLinkExternal size={24} />
+											</Link>
 										)}
 									</div>
+									<h2 className='lg:text-xl text-lg text-center sm:text-start'>
+										{movieData.tagline}
+									</h2>
 								</div>
-								{movieData.plot && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Overview
-										</h1>
-										<p className='md:text-lg text-md mb-8'>
-											{movieData.plot}
-										</p>
-									</div>
-								)}
-								{movieData.awards && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Awards
-										</h1>
-										<p className='md:text-lg text-md mb-8'>
-											{movieData.awards}
-										</p>
-									</div>
-								)}
-								{movieData.stars && (
-									<div>
-										<h1 className='md:text-2xl text-xl mb-3'>
-											Top Cast
-										</h1>
-										<p className='md:text-lg text-md mb-6'>
-											{movieData.stars}
-										</p>
-									</div>
-								)}
-								{movieData.trailer.link && (
-									<div className='text-center md:text-left'>
-										<button
-											type='button'
-											className='trailer-btn mt-8 rounded-xl px-6 py-3 text-xl default-transition 
-											border border-text 
-											bg-transparent hover:bg-text text-text hover:text-bg'
-											onClick={handleClick}
-										>
-											Watch Trailer
-										</button>
-									</div>
-								)}
+								<Table />
+							</div>
+
+							<div className='flex mx-2 sm:ml-0 sm:hidden lg:flex flex-col gap-10'>
+								<DetailedContent />
 							</div>
 						</div>
-						<div className='text-center'>
-							<h3 className='md:text-3xl text-2xl mb-10 md:mt-2 mt-14'>
-								You might also like
-							</h3>
+						<div className='hidden mx-2 sm:flex lg:hidden flex-col gap-10'>
+							<DetailedContent />
 						</div>
-						<Cards data={movieData.similars} />
 					</div>
-				) : (
-					<div className='flex flex-col h-[90vh] items-center justify-center'>
-						<p className='md:text-2xl sm:text-xl'>
-							API limit exceeded, try again later
-						</p>
+					<div className='text-center mt-16'>
+						<h3 className='md:text-3xl text-2xl mb-10 md:mt-2 mt-14'>
+							You might also like
+						</h3>
 					</div>
-				)
+					<Cards data={movieData.similars} />
+				</>
 			) : (
 				<div></div>
 			)}

@@ -11,7 +11,12 @@ module.exports = {
 				grey: "var(--grey)",
 				lightgrey: "var(--lightgrey)",
 			},
+			screens: {
+				"3xl": "2160px",
+				"4xl": "3200px",
+			},
 		},
 	},
-	plugins: [],
+	darkMode: ["class", '[data-theme="dark"]'],
+	plugins: [require("@tailwindcss/line-clamp")],
 }
