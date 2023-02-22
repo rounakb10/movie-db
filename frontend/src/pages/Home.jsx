@@ -27,10 +27,9 @@ function Home() {
 	}, [choice])
 
 	return (
-		<div className='flex flex-col h-screen items-center justify-between select-none'>
+		<div className='flex flex-col h-screen justify-between select-none'>
 			<Navbar />
-
-			<main className='self-stretch'>
+			<main className='flex flex-col basis-full'>
 				<InputGroup />
 				{loading && (
 					<div className='text-center mt-4'>
@@ -43,17 +42,9 @@ function Home() {
 				)}
 
 				{data ? (
-					data.errorMessage === "" || errorMessage === "" ? (
-						<div className='overflow-hidden p-2'>
-							<Cards data={data} />
-						</div>
-					) : (
-						<div className='flex flex-col h-[85vh] items-center justify-center'>
-							<p className='md:text-2xl sm:text-xl'>
-								API limit exceeded, try again later
-							</p>
-						</div>
-					)
+					<div className='overflow-hidden p-2'>
+						<Cards data={data} />
+					</div>
 				) : (
 					<></>
 				)}

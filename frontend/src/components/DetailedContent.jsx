@@ -8,24 +8,28 @@ import { useTheme } from "react-hook-theme"
 import placeholder from "../assets/placeholder-person.jpg"
 
 function DetailedContent() {
-	const { movieData, showPopup, setShowPopup, popupPerson, setPopupPerson } =
-		useContext(appContext)
+	const { movieData } = useContext(appContext)
 	const [readMore, setReadMore] = useState(false)
 	const { theme } = useTheme()
-
+	useEffect(() => {
+		setReadMore(false)
+	}, [movieData])
 	return (
 		<>
 			{movieData.overview && (
 				<CustomContent h='overview'>
-					<p className='sm:text-lg'>
+					<p
+						className={`sm:text-lg
+						}`}
+					>
 						{readMore
 							? movieData.overview
-							: movieData.overview.substring(0, 500)}
-						{movieData.overview.length > 500 &&
-							(!readMore ? ".." : " ")}
+							: movieData.overview.substring(0, 420).trim()}
+						{movieData.overview.length > 420 &&
+							(!readMore ? "... " : " ")}
 						<a
 							className={`cursor-pointer text-blue-300 ${
-								movieData.overview.length <= 500
+								movieData.overview.length <= 420
 									? "hidden"
 									: "inline-block"
 							}`}
@@ -33,7 +37,7 @@ function DetailedContent() {
 								setReadMore(!readMore)
 							}}
 						>
-							{readMore ? "read less" : "read more"}
+							{readMore ? "" : "read more"}
 						</a>
 					</p>
 				</CustomContent>

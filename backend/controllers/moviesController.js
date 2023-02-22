@@ -7,8 +7,6 @@ import {
 import axios from "axios"
 import dotenv from "dotenv"
 dotenv.config()
-import { movieData } from "../data/top_movies.js"
-import { seriesData } from "../data/top_series.js"
 import { inTheatersData } from "../data/in_theaters.js"
 import NodeCache from "node-cache"
 const myCache = new NodeCache()
@@ -17,23 +15,8 @@ const ttl = 86400
 const API_KEY = process.env.IMDB_API_KEY
 const TMDB_API_KEY = process.env.TMDB_API_KEY
 
-// const getTopMovies = async (req, res) => {
-// 	const URL = `https://imdb-api.com/en/API/Top250Movies/${API_KEY}`
-// 	const cachedData = myCache.get("topMovies")
-// 	if (cachedData) {
-// 		console.log("Sending cached data")
-// 		res.status(StatusCodes.OK).json(JSON.parse(cachedData))
-// 		return
-// 	}
-// 	const { data } = await axios.get(URL)
-// 	const success = myCache.set("topMovies", JSON.stringify(data), ttl)
-// 	console.log("Caching " + success)
-// 	res.status(StatusCodes.OK).json(data)
-// 	// res.status(StatusCodes.OK).json(movieData)
-// }
-
 function combine({ arr, newData }) {
-	arr = arr.concat(newData.results)
+	arr = arr.concat(newData.results || newData.items)
 	return arr
 }
 
@@ -57,7 +40,7 @@ const getTopMovies = async (req, res) => {
 		arr = combine({ arr, newData: data })
 	}
 
-	if (arr.length !== 300) {
+	if (arr.length === 0) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			errorMessage: "Some error occurred",
 			items: [],
@@ -95,7 +78,7 @@ const getTopSeries = async (req, res) => {
 		arr = combine({ arr, newData: data })
 	}
 
-	if (arr.length !== 300) {
+	if (arr.length === 0) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			errorMessage: "Some error occurred",
 			items: [],
@@ -118,21 +101,6 @@ const getTopSeries = async (req, res) => {
 	res.status(StatusCodes.OK).json(JSON.parse(cachedData))
 }
 
-// const getTopSeries = async (req, res) => {
-// 	const URL = `https://imdb-api.com/en/API/Top250TVs/${API_KEY}`
-// 	const cachedData = myCache.get("topSeries")
-// 	if (cachedData) {
-// 		console.log("Sending cached data")
-// 		res.status(StatusCodes.OK).json(JSON.parse(cachedData))
-// 		return
-// 	}
-// 	const { data } = await axios.get(URL)
-// 	const success = myCache.set("topSeries", JSON.stringify(data), ttl)
-// 	console.log("Caching " + success)
-// 	res.status(StatusCodes.OK).json(data)
-// 	// res.status(StatusCodes.OK).json(seriesData)
-// }
-
 const getInTheaters = async (req, res) => {
 	const URL = `https://imdb-api.com/en/API/InTheaters/${API_KEY}`
 	const cachedData = myCache.get("inTheaters")
@@ -149,47 +117,58 @@ const getInTheaters = async (req, res) => {
 }
 
 const getSearch = async (req, res) => {
-	if (req.query.search === "") {
-		throw BadRequestError("Missing search params")
-	}
 	const search = req.query.search
-	const URL = `https://imdb-api.com/en/API/Search/${API_KEY}/${search}`
-	const cachedData = myCache.get(`search_${search}`)
-	if (cachedData) {
-		console.log("Sending cached data")
-		res.status(StatusCodes.OK).json(JSON.parse(cachedData))
-		return
+	const type = req.query.type
+	if (
+		search === "" ||
+		(type !== "movie" && type !== "tv" && type !== "all")
+	) {
+		throw new BadRequestError("Missing search params")
 	}
-	const { data } = await axios.get(URL)
-	const success = myCache.set(`search_${search}`, JSON.stringify(data), ttl)
-	console.log("Caching : " + success)
+	let data
+	if (type === "movie") {
+		data = await searchHelper({ search, type: "movie" })
+	} else if (type === "tv") {
+		data = await searchHelper({ search, type: "tv" })
+	} else {
+		data = await searchHelper({ search, type: "movie" })
+		let tvData = await searchHelper({ search, type: "tv" })
+		data.items = combine({ arr: data.items, newData: tvData })
+	}
+	data.search = search
 	res.status(StatusCodes.OK).json(data)
 }
 
-// const getDetails = async (req, res) => {
-// 	if (req.query.movieId === "") {
-// 		throw BadRequestError("Missing search params")
-// 	}
-// 	const id = req.query.movieId
-// 	const URL = `https://imdb-api.com/en/API/Title/${API_KEY}/${id}/Trailer,Ratings,`
-// 	const cachedData = myCache.get(`id_${id}`)
-// 	if (cachedData) {
-// 		console.log("Sending cached data")
-// 		res.status(StatusCodes.OK).json(JSON.parse(cachedData))
-// 		return
-// 	}
-// 	const { data } = await axios.get(URL)
-// 	const success = myCache.set(`id_${id}`, JSON.stringify(data), ttl)
-// 	console.log("Caching : " + success)
-// 	res.status(StatusCodes.OK).json(data)
-// }
+async function searchHelper({ search, type }) {
+	let URL = `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_API_KEY}&language=en-US&query=${search}&page=1&include_adult=false`
+	let { data } = await axios.get(URL)
+	let arr = data.results
+	let pages = data.total_pages
+	if (pages > 1) {
+		for (let i = 2; i <= 2; i++) {
+			URL = `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_API_KEY}&language=en-US&query=${search}&page=${i}&include_adult=false`
+			let { data: newData } = await axios.get(URL)
+			arr = combine({ arr, newData })
+		}
+	}
+
+	arr.map((item) => {
+		item.title = item.name || item.title
+		if (item.poster_path) item.image = getImage(item.poster_path)
+		if (item.vote_average) {
+			item.rating = parseFloat(item.vote_average).toPrecision(2)
+		}
+		item.type = type
+	})
+	return { items: arr }
+}
 
 const getDetails = async (req, res) => {
 	if (
 		req.query.movieId === "" ||
 		(req.query.type !== "movie" && req.query.type !== "tv")
 	) {
-		throw new BadRequestError("Missing search params")
+		throw new BadRequestError("Missing params")
 	}
 	const id = req.query.movieId
 	const type = req.query.type
@@ -212,6 +191,7 @@ const getDetails = async (req, res) => {
 		data.originalTitle = null
 	}
 	data.website = fullData.homepage
+	data.type = type
 	data.trailers = []
 	fullData.videos.results.map((video, index) => {
 		if (video.type === "Trailer") {
@@ -219,6 +199,9 @@ const getDetails = async (req, res) => {
 			data.trailers.push(video)
 		}
 	})
+	if (data.trailers.length === 0) {
+		data.trailers = null
+	}
 	fullData.genres.map((genre, index) => {
 		if (index === 0) {
 			data.genres = genre.name
@@ -231,10 +214,10 @@ const getDetails = async (req, res) => {
 		} else data.languages += ", " + language.english_name
 	})
 
-	const RECOMMENDED_URL = `https://api.themoviedb.org/3/${type}/${id}/recommendations?api_key=${TMDB_API_KEY}&language=en-US`
+	let RECOMMENDED_URL = `https://api.themoviedb.org/3/${type}/${id}/recommendations?api_key=${TMDB_API_KEY}&language=en-US`
 	let { data: similars } = await axios.get(RECOMMENDED_URL)
 	if (similars.results.length === 0) {
-		let RECOMMENDED_URL = `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${TMDB_API_KEY}&language=en-US`
+		RECOMMENDED_URL = `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${TMDB_API_KEY}&language=en-US`
 		let { data } = await axios.get(RECOMMENDED_URL)
 		similars = data
 	}
@@ -247,6 +230,19 @@ const getDetails = async (req, res) => {
 	})
 
 	data.similars = similars.results
+
+	const CAST_URL = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${TMDB_API_KEY}&language=en-US`
+	let { data: cast } = await axios.get(CAST_URL)
+	cast = cast.cast //data returns cast and crew
+
+	cast.map((person) => {
+		if (person.profile_path) {
+			person.image = getImage(person.profile_path)
+		}
+	})
+
+	data.cast = cast
+
 	res.status(StatusCodes.OK).json(data)
 }
 

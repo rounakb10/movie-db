@@ -6,23 +6,13 @@ import appContext from "../context/appContext"
 import { BiLinkExternal } from "react-icons/bi"
 import DetailedContent from "../components/DetailedContent"
 import { Toggle } from "react-hook-theme"
+import Table from "../components/Table"
 function MovieDetails() {
 	const { loading, getMovieData, movieData, clearMovieData } =
 		useContext(appContext)
 
 	const params = useParams()
 	const location = useLocation()
-
-	const getDate = (val) => {
-		var date = new Date(val)
-		var options = {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-		}
-		var formattedDate = date.toLocaleDateString("en-IN", options)
-		return formattedDate
-	}
 
 	useEffect(() => {
 		getMovieData({ id: params.id, type: location.search.split("=").at(1) })
@@ -77,7 +67,7 @@ function MovieDetails() {
 							/>
 						</div>
 						<div className='flex flex-col gap-10 basis-auto lg:basis-2/3'>
-							<div className='flex flex-col gap-6 items-center sm:items-start'>
+							<div className='flex flex-col gap-6 items-center sm:items-start sm:mx-3 lg:mx-0'>
 								<div className='text-center md:text-start flex flex-col gap-3'>
 									<div className='flex items-center justify-center sm:justify-start gap-2'>
 										<h1 className='lg:text-4xl text-3xl font-medium text-slate-900 dark:text-white tracking-tight'>
@@ -100,38 +90,7 @@ function MovieDetails() {
 										{movieData.tagline}
 									</h2>
 								</div>
-								<div className='grid grid-cols-[auto,auto] gap-y-1 gap-x-3 text-lg lg:text-xl '>
-									<span className='text-slate-900 dark:text-slate-300'>
-										TMDB Rating
-									</span>
-									<span>
-										{movieData.rating}
-										/10
-									</span>
-									<span className='text-slate-900 dark:text-slate-300'>
-										{movieData.type === "movie"
-											? "Release Date"
-											: "Airing Date"}
-									</span>
-									<span>
-										{getDate(movieData.releaseDate)}
-										{movieData.type === "tv" &&
-										movieData.status !== "Ended"
-											? " - Present"
-											: movieData.lastAirDate &&
-											  ` - ${getDate(
-													movieData.lastAirDate
-											  )}`}
-									</span>
-									<span className='text-slate-900 dark:text-slate-300'>
-										Languages
-									</span>
-									<span>{movieData.languages}</span>
-									<span className='text-slate-900 dark:text-slate-300'>
-										Genres
-									</span>
-									<span>{movieData.genres}</span>
-								</div>
+								<Table />
 							</div>
 
 							<div className='flex mx-2 sm:ml-0 sm:hidden lg:flex flex-col gap-10'>
