@@ -10,7 +10,6 @@ function Home() {
 	const {
 		data,
 		loading,
-		errorMessage,
 		getNothing,
 		getTopMovies,
 		getTopSeries,

@@ -1,11 +1,9 @@
 import { useContext } from "react"
 import appContext from "../context/appContext"
-// import { Theme } from "react-switch-theme"
 import { Toggle } from "react-hook-theme"
 function Navbar() {
 	const { setChoice, getNothing } = useContext(appContext)
 	// eslint-disable-next-line
-	// const [theme, toggleTheme] = useContext(Theme)
 
 	return (
 		<nav className='flex basis-16 self-stretch gap-6 justify-between items-center mb-4 px-6 bg-surface md:rounded-b-lg'>
