@@ -14,7 +14,7 @@ A movie search application based on imdb-api.
 
 To run this project, you will need to create a .env file at the root directory and add the following environment variables to your .env file
 
-`IMDB_API_KEY` from https://imdb-api.com/api
+`TMDB_API_KEY` from https://developers.themoviedb.org/3/getting-started/introduction
 
 ## Run Locally
 
