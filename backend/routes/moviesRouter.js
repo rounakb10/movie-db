@@ -6,12 +6,14 @@ import {
 	getTopSeries,
 	getSearch,
 	getDetails,
-	getInTheaters,
+	getTop,
+	getTrending,
 } from "../controllers/moviesController.js"
 
 router.route("/top_movies").get(getTopMovies)
 router.route("/top_series").get(getTopSeries)
-router.route("/in_theaters").get(getInTheaters)
+router.route("/top").get(getTop)
+router.route("/trending").get(getTrending)
 router.route("/").get(getSearch)
 router.route("/details").get(getDetails)
 

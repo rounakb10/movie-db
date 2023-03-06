@@ -1,13 +1,13 @@
 function Footer() {
 	return (
-		<footer className='flex basis-6 self-stretch justify-center py-1 bg-surface text-text text-sm md:rounded-t-md'>
+		<footer className='flex basis-6 justify-center self-stretch bg-surface py-1 text-sm text-text md:rounded-t-md'>
 			<p>
 				Data provided by{" "}
 				<a
-					href='https://imdb-api.com'
-					className='default-transition hover:text-grey'
+					href='https://developers.themoviedb.org'
+					className='default-transition hover:opacity-50'
 				>
-					IMDB-API
+					TheMovieDB
 				</a>
 			</p>
 		</footer>

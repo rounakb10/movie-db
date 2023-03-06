@@ -42,9 +42,9 @@ function Table() {
 			<span className='text-slate-900 dark:text-slate-300'>
 				Languages
 			</span>
-			<span>{movieData.languages}</span>
+			<span>{movieData.languages || "-"}</span>
 			<span className='text-slate-900 dark:text-slate-300'>Genres</span>
-			<span>{movieData.genres}</span>
+			<span>{movieData.genres || "-"}</span>
 		</div>
 	)
 }
