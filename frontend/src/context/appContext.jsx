@@ -12,7 +12,7 @@ export const DataProvider = ({ children }) => {
 	const [choice, setChoice] = useState("theaters")
 	const getTopMovies = async () => {
 		setLoading(true)
-		const { data } = await axios("/api/imdb/top_movies")
+		const { data } = await axios("/api/imdb/top?type=movie")
 		if (data) {
 			setErrorMessage(data.errorMessage)
 			setData(data.items)
@@ -22,7 +22,7 @@ export const DataProvider = ({ children }) => {
 
 	const getTopSeries = async () => {
 		setLoading(true)
-		const { data } = await axios("/api/imdb/top_series")
+		const { data } = await axios("/api/imdb/top?type=tv")
 
 		if (data) {
 			setData(data.items)
@@ -50,12 +50,10 @@ export const DataProvider = ({ children }) => {
 			return
 		}
 		setLoading(true)
-
 		var searchText = searchTerm.trim().toLocaleLowerCase()
 		const { data } = await axios.get(
 			`/api/imdb?search=${searchText}&type=${type}`
 		)
-		console.log(data)
 		if (data && data.search === searchText) {
 			setErrorMessage(data.errorMessage)
 			setData(data.items)

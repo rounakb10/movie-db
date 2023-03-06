@@ -7,31 +7,25 @@ import appContext from "../context/appContext"
 import Footer from "../components/Footer"
 
 function Home() {
-	const {
-		data,
-		loading,
-		getNothing,
-		getTopMovies,
-		getTopSeries,
-		choice,
-	} = useContext(appContext)
-	useEffect(() => {
-		if (choice === "theaters") {
-			getNothing()
-		} else if (choice === "movies") {
-			getTopMovies()
-		} else if (choice === "series") {
-			getTopSeries()
-		}
-	}, [choice])
+	const { data, loading, getNothing, getTopMovies, getTopSeries, choice } =
+		useContext(appContext)
+	// useEffect(() => {
+	// 	if (choice === "theaters") {
+	// 		getNothing()
+	// 	} else if (choice === "movies") {
+	// 		getTopMovies()
+	// 	} else if (choice === "series") {
+	// 		getTopSeries()
+	// 	}
+	// }, [choice])
 
 	return (
-		<div className='flex flex-col h-screen justify-between select-none'>
+		<div className='flex h-screen select-none flex-col justify-between gap-4'>
 			<Navbar />
-			<main className='flex flex-col basis-full'>
-				<InputGroup />
+			<InputGroup />
+			<main className='flex basis-full flex-col gap-2'>
 				{loading && (
-					<div className='text-center mt-4'>
+					<div className='mb-4 text-center'>
 						<PropagateLoader
 							loading={loading}
 							size={14}
@@ -41,7 +35,7 @@ function Home() {
 				)}
 
 				{data ? (
-					<div className='overflow-hidden p-2'>
+					<div className='overflow-hidden px-2 pt-3'>
 						<Cards data={data} />
 					</div>
 				) : (

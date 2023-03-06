@@ -14,12 +14,12 @@ function InputGroup() {
 		search()
 	}, [searchTerm, type])
 	return (
-		<div className='flex mx-5 text-lg '>
+		<div className='mx-2 flex justify-center text-lg sm:mx-5'>
 			<DebounceInput
 				type='search'
 				minLength={2}
 				debounceTimeout={300}
-				className='basis-full px-4 py-3 rounded-l-xl  outline-none'
+				className='w-full rounded-l-xl px-4 py-3 outline-none dark:bg-neutral-200 dark:text-neutral-900'
 				placeholder='Search'
 				value={searchTerm}
 				onChange={handleChange}
@@ -30,7 +30,8 @@ function InputGroup() {
 			<select
 				name='type'
 				id='type'
-				className='rounded-r-xl px-1 py-3 outline-none'
+				className='rounded-r-xl bg-white px-1 py-3 outline-none dark:bg-neutral-200 dark:text-black'
+				value={type}
 				onChange={handleDropdownChange}
 			>
 				<option value='all'>All</option>

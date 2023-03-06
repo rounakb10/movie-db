@@ -2,39 +2,48 @@ import { useContext } from "react"
 import appContext from "../context/appContext"
 import { Toggle } from "react-hook-theme"
 function Navbar() {
-	const { setChoice, getNothing } = useContext(appContext)
+	const { setChoice, getNothing, getTopMovies, getTopSeries, setSearchTerm } =
+		useContext(appContext)
 	// eslint-disable-next-line
 
 	return (
-		<nav className='flex basis-16 self-stretch gap-6 justify-between items-center mb-4 px-6 bg-surface md:rounded-b-lg'>
+		<nav className='flex flex-shrink-0 basis-16 justify-between overflow-clip bg-surface md:rounded-b-lg'>
 			<button
-				className='nav-item text-2xl py-4 default-transition hover:text-grey'
+				className='default-transition px-2 text-2xl hover:bg-neutral-100 hover:dark:bg-neutral-900  sm:px-6'
 				onClick={() => {
 					setChoice("theaters")
 					getNothing()
+					setSearchTerm("")
 				}}
 			>
 				MovieDB
 			</button>
-			<div className='flex md:gap-6 gap-3'>
+			<div className='flex items-stretch'>
 				<button
-					className='default-transition hover:text-grey'
+					className='default-transition px-2 hover:bg-neutral-100 hover:dark:bg-neutral-900  sm:px-4'
 					onClick={() => {
 						setChoice("movies")
+						getTopMovies()
+						setSearchTerm("")
 					}}
 				>
 					Top Movies
 				</button>
 
 				<button
-					className='default-transition hover:text-grey'
+					className='default-transition px-2 hover:bg-neutral-100 hover:dark:bg-neutral-900 sm:px-4'
 					onClick={() => {
 						setChoice("series")
+						getTopSeries()
+						setSearchTerm("")
 					}}
 				>
 					Top TV
 				</button>
-				<Toggle />
+
+				<div className='self-center sm:mr-5'>
+					<Toggle />
+				</div>
 			</div>
 		</nav>
 	)

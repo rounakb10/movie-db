@@ -1,7 +1,9 @@
-function CustomContent({ h, children }) {
+function CustomContent({ h, children, id, hClass }) {
 	return (
-		<div className='flex flex-col gap-3 items-start'>
-			<h1 className='lg:text-3xl text-2xl capitalize text-slate-800 dark:text-slate-200'>
+		<div className='flex flex-col items-start gap-6' id={id}>
+			<h1
+				className={`text-2xl capitalize text-slate-800 dark:text-slate-200 lg:text-3xl ${hClass}`}
+			>
 				{h}
 			</h1>
 			{children}

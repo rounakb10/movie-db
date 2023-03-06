@@ -9,7 +9,7 @@ function Cards({ data }) {
 
 	return (
 		<>
-			<div className='grid xl grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 3xl:grid-cols-8 3xl:gap-10 lg:gap-8 gap-6 my-4 mx-3'>
+			<div className='grid grid-cols-2 gap-6 sm:mx-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 lg:gap-8 3xl:grid-cols-8 3xl:gap-10'>
 				{data &&
 					data.map((item, index) => {
 						if (!set.has(item.id)) {
@@ -26,7 +26,7 @@ function Cards({ data }) {
 			</div>
 			{/* Pagination */}
 			{data.length > 30 && (
-				<div className='flex justify-center gap-2'>
+				<div className='flex justify-center gap-2 py-4'>
 					<button
 						onClick={() => {
 							setCurrPage(currPage - 1)
@@ -41,7 +41,7 @@ function Cards({ data }) {
 						(x, i) => {
 							return (
 								<button
-									className={`p-2 rounded-lg border-[1px] border-slate-400 hover:opacity-60 ${
+									className={`rounded-lg border-[1px] border-slate-400 p-2 hover:opacity-60 ${
 										currPage === i + 1 &&
 										"bg-card hover:opacity-100"
 									}`}

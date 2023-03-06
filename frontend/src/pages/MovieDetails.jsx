@@ -3,10 +3,11 @@ import { useContext, useEffect, useState } from "react"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import Cards from "../components/Cards"
 import appContext from "../context/appContext"
-import { BiLinkExternal } from "react-icons/bi"
 import DetailedContent from "../components/DetailedContent"
 import { Toggle } from "react-hook-theme"
-import Table from "../components/Table"
+import placeholder from "../assets/placeholder.svg"
+import CustomContent from "../components/CustomContent"
+
 function MovieDetails() {
 	const { loading, getMovieData, movieData, clearMovieData } =
 		useContext(appContext)
@@ -16,8 +17,7 @@ function MovieDetails() {
 
 	useEffect(() => {
 		getMovieData({ id: params.id, type: location.search.split("=").at(1) })
-		// window.scrollTo({ top: 0, behavior: "smooth" })
-		// eslint-disable-next-line
+		window.scrollTo({ top: 0, behavior: "smooth" })
 	}, [location])
 
 	let navigate = useNavigate()
@@ -27,8 +27,12 @@ function MovieDetails() {
 	}
 
 	return (
-		<div className='p-2'>
-			<button type='button' onClick={handleClose} className='mt-2 ml-2'>
+		<div className='px-2 py-8 md:py-12'>
+			<button
+				type='button'
+				onClick={handleClose}
+				className='absolute top-4 right-4'
+			>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
 					fill='none'
@@ -44,11 +48,11 @@ function MovieDetails() {
 					/>
 				</svg>
 			</button>
-			<div className='absolute top-5 right-5'>
+			<div className='absolute top-4 right-16'>
 				<Toggle />
 			</div>
 			{loading && (
-				<div className='text-center mb-12'>
+				<div className='mb-12 text-center'>
 					<PropagateLoader
 						loading={loading}
 						size={12}
@@ -57,57 +61,30 @@ function MovieDetails() {
 				</div>
 			)}
 			{movieData ? (
-				<>
-					<div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap lg:gap-0 gap-6 justify-items-center content-center'>
-						<div className='mb-2 basis-1/3'>
+				<div className='flex flex-col gap-12'>
+					<div className='flex flex-col items-center justify-around gap-6 md:flex-row-reverse	md:gap-0'>
+						<div className='mt-6 max-w-xl flex-shrink-0 basis-1/3 md:self-start'>
 							<img
-								className='rounded-xl sm:w-3/4 w-[70%] mx-auto shadow-lg'
-								src={movieData.image}
+								className='mx-auto w-[70%] rounded-xl shadow-lg md:w-3/4 lg:w-3/4'
+								src={movieData.image || placeholder}
 								alt={movieData.title}
 							/>
 						</div>
-						<div className='flex flex-col gap-10 basis-auto lg:basis-2/3'>
-							<div className='flex flex-col gap-6 items-center sm:items-start sm:mx-3 lg:mx-0'>
-								<div className='text-center md:text-start flex flex-col gap-3'>
-									<div className='flex items-center justify-center sm:justify-start gap-2'>
-										<h1 className='lg:text-4xl text-3xl font-medium text-slate-900 dark:text-white tracking-tight'>
-											{movieData.title}
-											<span className='inline-block ml-1'>
-												{movieData.originalTitle &&
-													`(${movieData.originalTitle})`}
-											</span>
-										</h1>
-										{movieData.website && (
-											<Link
-												to={movieData.website}
-												target='_blank'
-											>
-												<BiLinkExternal size={24} />
-											</Link>
-										)}
-									</div>
-									<h2 className='lg:text-xl text-lg text-center sm:text-start'>
-										{movieData.tagline}
-									</h2>
-								</div>
-								<Table />
-							</div>
 
-							<div className='flex mx-2 sm:ml-0 sm:hidden lg:flex flex-col gap-10'>
-								<DetailedContent />
+						<DetailedContent />
+					</div>
+
+					{movieData.similars && (
+						<CustomContent
+							h='You might also like'
+							hClass='self-center'
+						>
+							<div className='py-2'>
+								<Cards data={movieData.similars} />
 							</div>
-						</div>
-						<div className='hidden mx-2 sm:flex lg:hidden flex-col gap-10'>
-							<DetailedContent />
-						</div>
-					</div>
-					<div className='text-center mt-16'>
-						<h3 className='md:text-3xl text-2xl mb-10 md:mt-2 mt-14'>
-							You might also like
-						</h3>
-					</div>
-					<Cards data={movieData.similars} />
-				</>
+						</CustomContent>
+					)}
+				</div>
 			) : (
 				<div></div>
 			)}
